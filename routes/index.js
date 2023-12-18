@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 const nodemailer = require('nodemailer');
 const User = require('../models/userModel');
+const expense = require('../models/expenseModel');
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 passport.use(new LocalStrategy(User.authenticate()));
@@ -12,7 +13,9 @@ router.get('/', function (req, res) {
   res.render('index');
 });
 router.get('/signin', function (req, res) {
-  res.render('signin.ejs');
+  res.render('signin.ejs', {
+    err: req.flash().error,
+  });
 });
 router.get('/profile', function (req, res) {
   res.render('profile.ejs');
@@ -20,6 +23,22 @@ router.get('/profile', function (req, res) {
 router.get('/forget', function (req, res) {
   res.render('forget.ejs');
 });
+router.get('/addexpense', (req, res) => {
+  res.render('Add.ejs');
+})
+
+router.post('/add-expense', async (req, res) => {
+  try {
+    const Expense = new expense(req.body);
+    req.user.expenses.push(Expense._id);
+    Expense.user = req.user._id;
+    await Expense.save();
+    await req.user.save();
+    res.redirect('/profile');
+  } catch (error) {
+    res.send(error);
+  }
+})
 
 router.post('/forget', async (req, res, next) => {
   try {
@@ -31,10 +50,10 @@ router.post('/forget', async (req, res, next) => {
     user.resetPasswordOtp = otp;
     await user.save();
     await sendMailhandler(req.body.email, otp, res);
-    res.render('otpvalidation.ejs',{
-       id:user._id,
+    res.render('otpvalidation.ejs', {
+      id: user._id,
     })
-    
+
   } catch (error) {
     res.send(error);
   }
@@ -116,7 +135,8 @@ router.post('/signup', async (req, res) => {
 //singin route
 router.post('/signin', passport.authenticate("local", {
   successRedirect: "/profile",
-  failureRedirect: "/",
+  failureRedirect: "/signin",
+  failureFlash: true,
 }),
   function (req, res, next) { }
 );
