@@ -1,0 +1,28 @@
+<%- include('../partiels/header.ejs') %>
+    <link rel="stylesheet" href="/stylesheets/Authenticate/signup.css">
+
+
+    <div class="main">
+        <h2>Tracking expenses is directly proportional to saving money.</h2>
+        <div class="center">
+            <div class="left">
+                <h1>Welcome Back!</h1>
+                <p>To keep connected with us please login with your personal info</p>
+                <a href="/">LOGIN</a>
+            </div>
+            <div class="right">
+                <div class="text">
+                    <h2>Create Account</h2>
+                    <p>fill your credentials here</p>
+                </div>
+                <form action="/Authenticate/signup" method="post" class="needs-validation">
+                    <input type="text" placeholder="username" required name="username">
+                    <input type="email" required placeholder="E-mail" name="email">
+                    <input type="password" required placeholder="xxxxxxx" name="password">
+                    <button>SIGN UP</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <%- include('../partiels/footer.ejs') %>

@@ -1,22 +1,14 @@
+
 const mongoose = require('mongoose');
 const plm = require('passport-local-mongoose');
 
-
-
-const userModel = mongoose.Schema({
-    email: String,
+const userSchema = new mongoose.Schema({
     username: String,
-    password: String,
-    resetPasswordOtp: Number,
-    expenses: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'expense',
-        }
-    ]
+    email:String,
+    password:String,
+    resetPasswordOtp:String,
+    expenses: [{ type: mongoose.Schema.Types.ObjectId, ref: "expense" }],
 })
 
-userModel.plugin(plm);
-
-
-module.exports = mongoose.model('user', userModel);
+userSchema.plugin(plm);
+module.exports = mongoose.model('user',userSchema);

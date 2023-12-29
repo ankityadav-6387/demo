@@ -1,9 +1,8 @@
 const mongoose = require('mongoose');
 
-// const url = process.env.URL
-const url = 'mongodb://127.0.0.1:27017/expense-tracker';
+const url ="mongodb://127.0.0.1:27017/tracker"
 
 mongoose
     .connect(url)
-    .then(() => console.log('DB connected'))
-    .catch((err) => console.log(err))
+    .then(()=>{ console.log('DB Connected'); })
+    .catch((err)=>{ console.log(err); })

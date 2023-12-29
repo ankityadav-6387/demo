@@ -1,0 +1,20 @@
+<%- include('../partiels/header.ejs') %>
+
+    <link rel="stylesheet" href="/stylesheets/Authenticate/forget.css">
+
+    <div class="main">
+        <div class="center">
+            <i class="ri-lock-fill"></i>
+            <h2>Forget Password?</h2>
+            <p>You can reset your password here.</p>
+            <form action="/send-mail" method="post">
+                <div class="inputs">
+                    <i class="ri-mail-fill"></i>
+                    <input type="email" required placeholder="E-mail" name="email">
+                </div>
+                <button>Send OTP</button>
+            </form>
+        </div>
+    </div>
+  
+<%- include('../partiels/footer.ejs') %>

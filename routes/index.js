@@ -1,46 +1,45 @@
 var express = require('express');
 var router = express.Router();
 const nodemailer = require('nodemailer');
-const User = require('../models/userModel');
-const expense = require('../models/expenseModel');
+const User = require("../models/userModel");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 passport.use(new LocalStrategy(User.authenticate()));
 
 
 /* GET home page. */
-router.get('/', function (req, res) {
-  res.render('index');
+router.get('/', function (req, res, next) {
+  res.render('Authenticate/signin.ejs');
 });
-router.get('/signin', function (req, res) {
-  res.render('signin.ejs', {
-    err: req.flash().error,
-  });
-});
-router.get('/profile', function (req, res) {
-  res.render('profile.ejs');
-});
-router.get('/forget', function (req, res) {
-  res.render('forget.ejs');
-});
-router.get('/addexpense', (req, res) => {
-  res.render('Add.ejs');
+router.get('/signup', (req, res, next) => {
+  res.render('Authenticate/signup.ejs');
+})
+router.get('/forget', (req, res) => {
+  res.render('Authenticate/forget.ejs');
 })
 
-router.post('/add-expense', async (req, res) => {
+//signup route
+router.post('/Authenticate/signup', async (req, res) => {
   try {
-    const Expense = new expense(req.body);
-    req.user.expenses.push(Expense._id);
-    Expense.user = req.user._id;
-    await Expense.save();
-    await req.user.save();
-    res.redirect('/profile');
+    await User.register(
+      { username: req.body.username, email: req.body.email },
+      req.body.password
+    );
+    res.redirect("/");
   } catch (error) {
+    console.log(error);
     res.send(error);
   }
 })
-
-router.post('/forget', async (req, res, next) => {
+//singin route
+router.post('/Authenticate/signin', passport.authenticate("local", {
+  successRedirect: "/profile",
+  failureRedirect: "/",
+}),
+  function (req, res, next) { }
+);
+//Send-mail route
+router.post('/send-mail', async (req, res, next) => {
   try {
     const user = await User.findOne({ email: req.body.email });
     if (!user) {
@@ -50,15 +49,15 @@ router.post('/forget', async (req, res, next) => {
     user.resetPasswordOtp = otp;
     await user.save();
     await sendMailhandler(req.body.email, otp, res);
-    res.render('otpvalidation.ejs', {
+    res.render('Authenticate/otpValidation.ejs', {
+      email: req.body.email,
       id: user._id,
-    })
-
+      admin: req.user,
+    });
   } catch (error) {
     res.send(error);
   }
 })
-
 //sendMailHandler Function
 async function sendMailhandler(email, otp, res) {
   const transport = nodemailer.createTransport({
@@ -66,13 +65,13 @@ async function sendMailhandler(email, otp, res) {
     host: "smtp.gmail.com",
     port: 465,
     auth: {
-      user: `ankitghaghri@gmail.com`,
-      pass: 'xubl fqcn hahx vlov',
+      user: `sumonkhan1081@gmail.com`,
+      pass: process.env.PASSWORD,
     },
   });
   // receiver mailing info
   const mailOptions = {
-    from: "Ankit Pvt. Ltd.<ankitghaghri@gmail.com>",
+    from: "Su Mon Pvt. Ltd.<sumonkhan1081@gmail.com>",
     to: email,
     subject: "OTP Testing Mail Service",
     // text: req.body.message,
@@ -87,14 +86,15 @@ async function sendMailhandler(email, otp, res) {
     return;
   });
 }
-
 //OTP Check 
-router.post('/otp/:id', async (req, res) => {
+router.post('/Authenticate/OTP-match/:id', async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
     // console.log(user);
     if (user.resetPasswordOtp == req.body.otp) {
-      res.render('newPassword.ejs', { id: user._id });
+      user.resetPasswordOtp = -1;
+      await user.save();
+      res.render('Authenticate/newPassword.ejs', { id: user._id });
       return;
     }
     res.send('OTP not match');
@@ -102,43 +102,35 @@ router.post('/otp/:id', async (req, res) => {
     res.send(error);
   }
 })
-
-
 //Re-Password Generate
-router.post('/change-password/:id', async (req, res, next) => {
+router.post('/Authenticate/change-password/:id', async (req, res, next) => {
   try {
     const user = await User.findById(req.params.id);
-    const newPassword = req.body.newpassword;
+    const newPassword = req.body.password;
     // user.password = newPassword;
     await user.setPassword(newPassword);
     await user.save();
-    res.redirect('/signin');
+    res.redirect('/');
   } catch (error) {
     res.send(error);
   }
 })
 
-
-router.post('/signup', async (req, res) => {
-  try {
-    await User.register(
-      { username: req.body.username, email: req.body.email },
-      req.body.password
-    );
-    res.redirect("/signin");
-  } catch (error) {
-    console.log(error);
-    res.send(error);
+// AUTHENTICATED ROUTE MIDDLEWARE
+function isLoggedIn(req, res, next) {
+  if (req.isAuthenticated()) {
+    next();
+  } else {
+    res.redirect("/");
   }
-})
+}
+// SIGNOUT CODE
+router.get("/logout", isLoggedIn, function (req, res, next) {
+  req.logout(() => {
+    res.redirect("/");
+  });
+});
 
-//singin route
-router.post('/signin', passport.authenticate("local", {
-  successRedirect: "/profile",
-  failureRedirect: "/signin",
-  failureFlash: true,
-}),
-  function (req, res, next) { }
-);
+
 
 module.exports = router;

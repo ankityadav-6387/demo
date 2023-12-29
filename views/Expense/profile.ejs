@@ -1,0 +1,65 @@
+<%- include('../partiels/header.ejs') %>
+
+    <link rel="stylesheet" href="/stylesheets/Expense/profile.css">
+
+    <%- include('../partiels/nav.ejs') %>
+        <!-- add-expenses -->
+        <div class="add-item">
+            <!-- /create-expense -->
+            <form action="/create-expense" method="post">
+                <select required class="form-control w-25" name="category" id="select">
+                    <option value="">Select Category</option>
+                    <% category.forEach((element)=> { %>
+                        <option value="<%= element %>">
+                            <%= element %>
+                        </option>
+                        <% }) %>
+                </select>
+                <br><br>
+                <input id="description" required class="form-control" type="text" placeholder="description" name="description">
+                <br><br>
+                <input class="form-control" required type="number" placeholder="amount" name="amount">
+                <br><br>
+                <button class="btn btn-info">Submit</button>
+            </form>
+        </div>
+
+        <!-- show expenses -->
+        
+        <div class="profile">
+            <div class="top-bar">
+                <p>Date</p>
+                <p>Category</p>
+                <p>Description</p>
+                <p>Amount</p>
+                <p class="last"></p>
+            </div>
+            <div class="features">
+                <% expenses.forEach((expense)=> { %>
+                    <div class="expenses">
+                        <p class="date">
+                            <%= expense.createdAt.toString().split(' ').slice(0,3).join('-') %>
+                        </p>
+                        <p class="category">
+                            <%= expense.category %>
+                        </p>
+                        <p class="description">
+                            <%= expense.description %>
+                        </p>
+                        <p class="amount">
+                            <%= expense.amount %>
+                        </p>
+                        <p class="btn-feature">
+                            <a class="btn btn-outline-danger" href="/delete/<%= expense._id %>"><i class="ri-delete-bin-6-fill"></i></a>
+                            <a class="btn btn-outline-primary" href="/update/<%= expense._id %>"><i class="ri-refresh-fill"></i></a>
+                        </p>
+                          
+                    </div>
+                   
+                <% }) %>
+            </div>
+        </div>
+
+        <!--  -->
+
+<%- include('../partiels/footer.ejs') %>

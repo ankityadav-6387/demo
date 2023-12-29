@@ -1,0 +1,20 @@
+<%- include('../partiels/header.ejs') %>
+
+    <link rel="stylesheet" href="/stylesheets/Authenticate/forget.css">
+
+    <div class="main">
+        <div class="center">
+            <i class="ri-shield-check-fill"></i>
+            <h2>OTP </h2>
+            <p>You can enter your OTP here.</p>
+            <form action="/Authenticate/OTP-match/<%= id %>" method="post">
+                <div class="inputs">
+                    <i class="ri-checkbox-circle-fill"></i>
+                    <input type="text" required placeholder="Enter OTP" name="otp">
+                </div>
+                <button>Verify</button>
+            </form>
+        </div>
+    </div>
+   
+<%- include('../partiels/footer.ejs') %>

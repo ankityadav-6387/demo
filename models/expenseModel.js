@@ -1,15 +1,17 @@
+
 const mongoose = require('mongoose');
 
-const expenseSchema = mongoose.Schema({
-    category: String,
-    amount: Number,
-    description: String,
-    user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref:'user',
-    }
-})
+const expenseModel = new mongoose.Schema(
+    {
+        category:String,
+        description:String,
+        amount:Number,
+        user: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
+    },
+    { timestamps: true },
+);
 
 
+module.exports = mongoose.model('expense',expenseModel);
 
-module.exports = mongoose.model('expense', expenseSchema);
+

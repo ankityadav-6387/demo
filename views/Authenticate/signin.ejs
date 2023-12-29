@@ -1,0 +1,27 @@
+<%- include('../partiels/header.ejs') %>
+
+    <link rel="stylesheet" href="/stylesheets/Authenticate/signin.css">
+
+    <div class="main">
+        <h2>Tracking expenses is directly proportional to saving money.</h2>
+        <div class="center">
+            <div class="left">
+                <div class="text">
+                    <h2>Login</h2>
+                    <p>use your previous credentials</p>
+                </div>
+                <form action="/Authenticate/signin" method="post">
+                    <input type="text" required placeholder="username" name="username">
+                    <input type="password" required placeholder="xxxxxxx" name="password">
+                    <a class="forget" href="/forget">Foget your password?</a>
+                    <button>LOGIN</button>
+                </form>
+            </div>
+            <div class="right">
+                <h1>Hello, Friend!</h1>
+                <p>Enter your personal details and start journey with us</p>
+                <a href="/signup">SIGN UP</a>
+            </div>
+        </div>
+    </div>
+<%- include('../partiels/footer.ejs') %>
